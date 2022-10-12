@@ -1,0 +1,19 @@
+version: v1
+plugins:
+  - name: go
+    out: ../
+    opt: paths=import
+  # - name: go-grpc
+    # out: ../
+    # opt:
+      # - paths=import
+  # - name: grpc-gateway
+    # out: ../
+    # opt:
+      # - paths=import
+  - name: openapiv2
+    strategy: all
+    opt:
+      - allow_merge=true
+      - merge_file_name=apidocs
+    out: docs
