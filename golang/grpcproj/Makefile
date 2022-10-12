@@ -7,5 +7,5 @@ clean:
 gen: clean
 	buf generate
 	widdershins --language_tabs 'go:Go' 'shell:curl' --summary docs/apidocs.swagger.json -o docs/index.html.md
-	docker build . -t gen_api -f genapi.Dockerfile
+	docker build . -t gen_api -f ./infrafiles/genapi/Dockerfile
 	docker run --rm  -v $(ROOT_DIR)/docs/slatedocs/:/srv/slate/build -it gen_api

@@ -15,6 +15,8 @@ API_GENERATOR_DOCKER_FILE="$REMOTE_BASE_URL/Dockerfile"
 MAKE_FILE_PARTIAL_URL="$REMOTE_BASE_URL/Makefile"
 SAMPLE_PROTO_FILE_TEMPLATE="$REMOTE_BASE_URL/greeter.proto"
 
+SAMPLE_MAIN_GO="$REMOTE_BASE_URL/main.go.sample"
+
 function assert_instal_dirctory_in_path() {
     if [[ -z "$(go env GOBIN)" ]]; then
         echo "please add GOBIN to your env. with export GOBIN=./some/empty/directory"
@@ -106,6 +108,8 @@ function setup_sample_directory() {
 
   appname="$(basename $(pwd))" envsubst < <(curl -sk "$SAMPLE_PROTO_FILE_TEMPLATE")  > greeter/protos/greeter.proto
   mkdir -p docs/slatedocs
+
+  curl -sk "$SAMPLE_MAIN_GO" -o main.go.sample
 }
 
 echo "checking if go is present"

@@ -1,0 +1,51 @@
+package main
+
+import (
+	"encoding/json"
+	"log"
+	"net/http"
+	"todoapp/pages/contracts"
+
+	"github.com/gofiber/fiber/v2"
+	"google.golang.org/protobuf/types/known/timestamppb"
+)
+
+func main() {
+	app := fiber.New()
+
+	app.Static("/todoapp/apidocs", "./docs/slatedocs")
+	app.Static("/todoapp/stylesheets", "./docs/slatedocs/stylesheets")
+	app.Static("/todoapp/fonts", "./docs/slatedocs/fonts")
+	app.Static("/todoapp/images", "./docs/slatedocs/images")
+	app.Static("/todoapp/javascripts", "./docs/slatedocs/javascripts")
+
+	app.Static("/todoapp/redocs", "./docs/redoc")
+
+	app.Post("/api/pages", func(c *fiber.Ctx) error {
+		p := new(contracts.CreatePageRequest)
+
+		if err := c.BodyParser(p); err != nil {
+			return err
+		}
+
+		resp := &contracts.ApiResponse{
+			Success: false,
+			Page: &contracts.PageResponse{
+				Id:        p.Id,
+				ItemCount: 2,
+				CreatedAt: timestamppb.Now(),
+			},
+		}
+
+		b, err := json.Marshal(resp)
+		if err != nil {
+			log.Println(err)
+			return c.Status(http.StatusInternalServerError).SendString(`{"success": false, "error": "internal"}`)
+		}
+
+		return c.Status(http.StatusCreated).SendString(string(b))
+	})
+
+	log.Fatal(app.Listen(":3000"))
+}
+
