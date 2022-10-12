@@ -3,9 +3,17 @@
 set -e
 
 DARWIN_URL="https://github.com/bufbuild/buf/releases/download/v1.8.0/buf-Darwin-x86_64"
-
 LINUX_URL="https://github.com/bufbuild/buf/releases/download/v1.8.0/buf-Linux-x86_64"
 
+REMOTE_BASE_URL="https://raw.githubusercontent.com/amitavaghosh1/setup/main/golang/grpcproj"
+BUF_CONFIG_URL="$REMOTE_BASE_URL/buf.gen.yaml"
+TOOLS_FILE_URL="$REMOTE_BASE_URL/tools.go"
+
+DEFAULT_PROTOS_SCRIPT_URL="$REMOTE_BASE_URL/install_protos.sh"
+API_GENERATOR_DOCKER_FILE="$REMOTE_BASE_URL/Dockerfile"
+
+MAKE_FILE_PARTIAL_URL="$REMOTE_BASE_URL/Makefile"
+SAMPLE_PROTO_FILE_TEMPLATE="$REMOTE_BASE_URL/greeter.proto"
 
 function assert_instal_dirctory_in_path() {
     if [[ -z "$(go env GOBIN)" ]]; then
@@ -34,7 +42,7 @@ function download_buf() {
 }
 
 function fetch_buf_config() {
-    curl -sk 'https://gist.githubusercontent.com/amitavaghosh1/876fb14756caf0e0668a4023e2b701cd/raw/e096fb51cdef29012dc236adf2797e578bafa929/buf.gen.yaml' -o buf.gen.yaml
+    curl -sk "$BUF_CONFIG_URL" -o buf.gen.yaml
 }
 
 function has_go() {
@@ -65,7 +73,7 @@ function all_things_go() {
 }
 
 function fetch_tools_go() {
-    curl -sk 'https://gist.githubusercontent.com/amitavaghosh1/876fb14756caf0e0668a4023e2b701cd/raw/803a41546bc9d9a738b9e21630a4bf4c563366a0/tools.go' -o tools.go
+    curl -sk "$TOOLS_FILE_URL" -o tools.go
 }
 
 function has_npm() {
@@ -80,22 +88,23 @@ function all_things_node() {
 }
 
 function install_required_protos() {
-    curl -sk 'https://gist.githubusercontent.com/amitavaghosh1/876fb14756caf0e0668a4023e2b701cd/raw/6737697b28cfab3bdb7706999979d9211f565520/install_protos.sh' | bash
+    curl -sk "$DEFAULT_PROTOS_SCRIPT_URL" | bash
 }
 
 function fetch_generator_dockerfile() {
-    curl -sk 'https://gist.githubusercontent.com/amitavaghosh1/876fb14756caf0e0668a4023e2b701cd/raw/2e2d35655086af810c1dcb18e86152bb76f53181/Dockerfile' -o genapi.Dockerfile
+    mkdir -p infrafiles/genapi
+    curl -sk "$API_GENERATOR_DOCKER_FILE" -o infrafiles/genapi/Dockerfile
 }
 
 function fetch_makefile() {
-    curl -sk 'https://gist.githubusercontent.com/amitavaghosh1/876fb14756caf0e0668a4023e2b701cd/raw/8928a51cab9999f9a022ff5f5654b1abf5011e46/Makefile' | tee -a Makefile
+    curl -sk "$MAKE_FILE_PARTIAL_URL" | tee -a Makefile
 }
 
 function setup_sample_directory() {
   mkdir -p greeter/contracts
   mkdir -p greeter/protos
 
-  appname="$(basename $(pwd))" envsubst < <(curl -sk 'https://gist.githubusercontent.com/amitavaghosh1/876fb14756caf0e0668a4023e2b701cd/raw/2686ec178c8c4a07fc82402b4dc58cdb78b18686/greeter.proto')  > greeter/protos/greeter.proto
+  appname="$(basename $(pwd))" envsubst < <(curl -sk "$SAMPLE_PROTO_FILE_TEMPLATE")  > greeter/protos/greeter.proto
   mkdir -p docs/slatedocs
 }
 
