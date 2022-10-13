@@ -40,7 +40,7 @@ function download_buf() {
     fi
 
     chmod +x ./buf
-    # cp ./buf "$GOBIN" 
+    cp ./buf "$GOBIN" 
 }
 
 function fetch_buf_config() {
