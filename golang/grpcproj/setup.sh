@@ -17,12 +17,6 @@ SAMPLE_PROTO_FILE_TEMPLATE="$REMOTE_BASE_URL/greeter.proto"
 
 SAMPLE_MAIN_GO="$REMOTE_BASE_URL/main.go.sample"
 
-function assert_instal_dirctory_in_path() {
-    if [[ -z "$(go env GOBIN)" ]]; then
-        echo "please add GOBIN to your env. with export GOBIN=./some/empty/directory"
-        exit 1
-    fi
-}
 
 function download_buf() {
     os=$(uname -s)
@@ -32,15 +26,15 @@ function download_buf() {
         return
     fi
 
+    GO111MODULE=on go install github.com/bufbuild/buf/cmd/buf@v1.8.0 
+}
 
-    if [[ "$os" == "Linux" ]]; then
-        curl -sL "$LINUX_URL" -o buf
-    else
-        curl -sL "$DARWIN_URL" -o buf
-    fi
-
-    chmod +x ./buf
-    cp ./buf "$GOBIN" 
+function has_buf() {
+  if [[ -z "$(which buf)" ]]; then
+      echo "please install buf"
+      echo "https://docs.buf.build/installation"
+      exit 1
+  fi
 }
 
 function fetch_buf_config() {
@@ -115,11 +109,13 @@ function setup_sample_directory() {
 echo "checking if go is present"
 has_go
 
-echo "validate if a directory is present in PATH"
-assert_instal_dirctory_in_path
 
 echo "download and install buff"
 download_buf
+
+echo "verify buf in PATH"
+has_buf
+
 
 echo "fetch buf config"
 fetch_buf_config
