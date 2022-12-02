@@ -80,6 +80,7 @@ service EchoService {
   // The message posted as the id parameter will also be
   // returned.
   rpc Echo(SimpleMessage) returns (SimpleMessage) {
+    
     option (google.api.http) = {
       post: "/v1/example/echo/{id}"
       additional_bindings {
@@ -100,6 +101,13 @@ service EchoService {
   rpc EchoBody(SimpleMessage) returns (SimpleMessage) {
     option (google.api.http) = {
       post: "/v1/example/echo_body"
+      option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+        headers: {
+          name: "Authorization";
+          description: "bearer authorization";
+          type: STRING,
+        };
+      };
       body: "*"
       additional_bindings {
         put: "/v1/example/echo_body/{id}"
