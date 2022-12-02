@@ -99,15 +99,15 @@ service EchoService {
   }
   // EchoBody method receives a simple message and returns it.
   rpc EchoBody(SimpleMessage) returns (SimpleMessage) {
-    option (google.api.http) = {
-      post: "/v1/example/echo_body"
-      option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
         headers: {
           name: "Authorization";
           description: "bearer authorization";
           type: STRING,
         };
-      };
+    };
+    option (google.api.http) = {
+      post: "/v1/example/echo_body"
       body: "*"
       additional_bindings {
         put: "/v1/example/echo_body/{id}"
